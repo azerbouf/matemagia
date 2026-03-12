@@ -3,7 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ArrowLeft, Medal, Crown, Trophy } from "lucide-react";
+import { ArrowLeft, Medal, Crown, Trophy, User } from "lucide-react";
 import { motion } from "framer-motion";
 import { LEVEL_LABELS } from "../components/game/mathUtils";
 import { createPageUrl } from "@/utils";
@@ -63,12 +63,12 @@ export default function Leaderboard() {
         </div>
 
         {/* Level tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+        <div className="grid grid-cols-4 gap-1.5 mb-6">
           {levelTabs.map((lvl) => (
             <button
               key={lvl}
               onClick={() => setActiveLevel(lvl)}
-              className={`px-4 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all ${
+              className={`py-2 rounded-full text-xs sm:text-sm font-bold transition-all ${
                 activeLevel === lvl
                   ? `${levelColors[lvl]} text-white shadow-md`
                   : "bg-white text-gray-500 border border-gray-200"
@@ -104,7 +104,14 @@ export default function Leaderboard() {
             >
               <div className="flex-shrink-0">{getMedalIcon(index)}</div>
               <div className="flex-1 min-w-0">
-                <p className="font-bold text-gray-800 truncate">{result.player_name}</p>
+                <div className="flex items-center gap-1.5">
+                  <p className="font-bold text-gray-800 truncate">{result.player_name}</p>
+                  {result.created_by === "anonymous" && (
+                    <span title="Гость">
+                      <User className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+                    </span>
+                  )}
+                </div>
                 <p className="text-xs text-gray-400">
                   {result.correct_answers}/{result.total_questions} верных
                 </p>

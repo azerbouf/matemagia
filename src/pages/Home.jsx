@@ -149,7 +149,7 @@ export default function Home() {
         playerName={user ? (user.display_name || user.full_name) : guestName}
         onSelect={handleLevelSelect}
       />
-      <div className="px-4 max-w-md mx-auto mt-2 pb-10">
+      <div className="px-4 max-w-md mx-auto mt-2 pb-10 space-y-3">
         <a href={createPageUrl("Leaderboard")}>
           <Button
             variant="outline"
@@ -159,6 +159,16 @@ export default function Home() {
             Таблица лидеров
           </Button>
         </a>
+        {!user && (
+          <Button
+            onClick={() => base44.auth.redirectToLogin(createPageUrl("Home"))}
+            variant="outline"
+            className="w-full h-12 rounded-2xl border-2 border-violet-200 text-violet-600 hover:bg-violet-50"
+          >
+            <LogIn className="w-5 h-5 mr-2" />
+            Войти в аккаунт
+          </Button>
+        )}
       </div>
     </div>
   );
