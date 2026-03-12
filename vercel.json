@@ -6,6 +6,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://zadachki.base44.app/api/:path*"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ]
 }
