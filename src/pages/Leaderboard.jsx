@@ -47,10 +47,31 @@ export default function Leaderboard() {
     initialData: [],
   });
 
-  const filtered = results
-    .filter((r) => r.level === activeLevel)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 20);
+  const filtered = (() => {
+    const byLevel = results.filter((r) => r.level === activeLevel);
+    const grouped = {};
+    for (const r of byLevel) {
+      const key = r.user_id || `guest_${r.player_name}`;
+      if (!grouped[key]) {
+        grouped[key] = {
+          player_name: r.player_name,
+          is_guest: r.is_guest,
+          score: 0,
+          correct_answers: 0,
+          total_questions: 0,
+          games: 0,
+        };
+      }
+      grouped[key].score += r.score;
+      grouped[key].correct_answers += r.correct_answers;
+      grouped[key].total_questions += r.total_questions;
+      grouped[key].games += 1;
+    }
+    return Object.entries(grouped)
+      .map(([key, data]) => ({ id: key, ...data }))
+      .sort((a, b) => b.score - a.score)
+      .slice(0, 20);
+  })();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-violet-50 via-white to-indigo-50 pb-8">
@@ -121,7 +142,7 @@ export default function Leaderboard() {
                   )}
                 </div>
                 <p className="text-xs text-gray-400">
-                  {result.correct_answers}/{result.total_questions} верных
+                  {result.correct_answers}/{result.total_questions} верных · {result.games} {result.games === 1 ? 'игра' : result.games < 5 ? 'игры' : 'игр'}
                 </p>
               </div>
               <div className="text-right flex-shrink-0">
