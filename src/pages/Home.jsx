@@ -20,7 +20,7 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="h-[100dvh] flex items-center justify-center bg-gradient-to-b from-violet-50 to-indigo-50">
+      <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-violet-50 to-indigo-50">
         <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
       </div>
     );
@@ -73,7 +73,7 @@ export default function Home() {
   // Landing screen
   if (mode === null) {
     return (
-      <div className="h-[100dvh] bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
+      <div className="flex-1 bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -118,7 +118,7 @@ export default function Home() {
   // Email login/signup
   if (mode === "email-login") {
     return (
-      <div className="h-[100dvh] bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
+      <div className="flex-1 bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -208,7 +208,7 @@ export default function Home() {
   // Guest name input
   if (mode === "guest") {
     return (
-      <div className="h-[100dvh] bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
+      <div className="flex-1 bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -254,7 +254,7 @@ export default function Home() {
 
   // Level selection
   return (
-    <div className="h-[100dvh] bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col overflow-hidden">
+    <div className="flex-1 bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col overflow-hidden">
       <div className="flex-1 min-h-0 overflow-y-auto">
         <LevelSelect
           playerName={isAuthenticated ? (profile?.display_name || user?.user_metadata?.full_name) : guestName}

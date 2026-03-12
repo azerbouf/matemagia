@@ -6,12 +6,12 @@ import { LogOut, BarChart3, Trophy } from "lucide-react";
 export default function Layout({ children, currentPageName }) {
   const { user, profile, isAuthenticated, logout } = useAuth();
 
-  const showHeader = currentPageName !== "Game" && currentPageName !== "Home";
+  const showHeader = currentPageName !== "Game";
   const displayName = profile?.display_name || user?.user_metadata?.full_name || user?.email;
   const avatarUrl = profile?.avatar_url;
 
   return (
-    <div>
+    <div className={showHeader ? "h-[100dvh] flex flex-col" : ""}>
       {showHeader && (
         <div className="bg-violet-50">
           <div className="px-4 pt-3 pb-2 max-w-md mx-auto flex items-center justify-between">
@@ -70,7 +70,9 @@ export default function Layout({ children, currentPageName }) {
           </div>
         </div>
       )}
-      {children}
+      <div className={showHeader ? "flex-1 min-h-0 overflow-y-auto flex flex-col" : ""}>
+        {children}
+      </div>
     </div>
   );
 }
