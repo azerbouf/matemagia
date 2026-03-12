@@ -82,9 +82,9 @@ export default function Home() {
           <motion.div
             animate={{ rotate: [0, 10, -10, 0] }}
             transition={{ repeat: Infinity, duration: 3, ease: "easeInOut" }}
-            className="text-7xl mb-4"
+            className="mb-4"
           >
-            🧮
+            <img src="/logo.png" alt="МатеМагия" className="w-24 h-24 mx-auto" />
           </motion.div>
           <h1 className="text-4xl font-extrabold text-center bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent mb-2">
             МатеМагия
