@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { supabase } from "@/api/supabaseClient";
 import { useAuth } from "@/lib/AuthContext";
 import { useQuery } from "@tanstack/react-query";
@@ -30,14 +30,16 @@ function formatGameDate(isoStr) {
   return `${d.getDate()} ${months[d.getMonth()]}`;
 }
 
-function getActivityData(results) {
+function getActivityData(results, numDays = 7) {
   const days = [];
-  for (let i = 13; i >= 0; i--) {
+  for (let i = numDays - 1; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
+    const dayNames = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
     days.push({
       date: d.toISOString().slice(0, 10),
-      label: String(d.getDate()),
+      label: numDays <= 14 ? String(d.getDate()) : (d.getDate() % 5 === 0 || i === 0 ? String(d.getDate()) : ''),
+      dayName: dayNames[d.getDay()],
       count: 0,
       totalScore: 0,
       totalCorrect: 0,
@@ -74,30 +76,60 @@ function getLevelStats(results) {
   }).filter(Boolean);
 }
 
-function ActivityChart({ data }) {
+const PERIOD_OPTIONS = [
+  { value: 7, label: '7д' },
+  { value: 14, label: '14д' },
+  { value: 30, label: 'Мес' },
+];
+
+function ActivityChart({ data, period, onPeriodChange }) {
   const maxCount = Math.max(...data.map(d => d.count), 1);
+  const totalInPeriod = data.reduce((s, d) => s + d.count, 0);
   return (
     <div className="bg-white rounded-2xl border border-gray-100 p-4 shadow-sm">
-      <div className="flex items-center gap-2 mb-4">
-        <CalendarDays className="w-4 h-4 text-violet-500" />
-        <h3 className="text-sm font-bold text-gray-700">Активность за 14 дней</h3>
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <CalendarDays className="w-4 h-4 text-violet-500" />
+          <h3 className="text-sm font-bold text-gray-700">
+            Активность
+            {totalInPeriod > 0 && <span className="text-gray-400 font-normal ml-1">({totalInPeriod})</span>}
+          </h3>
+        </div>
+        <div className="flex gap-1 bg-gray-100 rounded-full p-0.5">
+          {PERIOD_OPTIONS.map(opt => (
+            <button
+              key={opt.value}
+              onClick={() => onPeriodChange(opt.value)}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-bold transition-all ${
+                period === opt.value
+                  ? 'bg-violet-500 text-white shadow-sm'
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              {opt.label}
+            </button>
+          ))}
+        </div>
       </div>
       <div className="flex items-end gap-[3px] h-24">
         {data.map((d, i) => (
           <div key={i} className="flex-1 flex flex-col items-center gap-0.5">
-            {d.count > 0 && (
+            {d.count > 0 && period <= 14 && (
               <span className="text-[8px] font-bold text-violet-500 leading-none">{d.count}</span>
             )}
             <motion.div
+              key={`${period}-${i}`}
               initial={{ height: 0 }}
               animate={{ height: d.count > 0 ? `${Math.max((d.count / maxCount) * 100, 10)}%` : '0%' }}
-              transition={{ duration: 0.5, delay: i * 0.03 }}
+              transition={{ duration: 0.4, delay: i * 0.02 }}
               className="w-full rounded-t bg-gradient-to-t from-violet-500 to-violet-300"
-              style={{ minHeight: d.count > 0 ? 4 : 0 }}
+              style={{ minHeight: d.count > 0 ? 3 : 0 }}
             />
-            <span className={`text-[9px] leading-none ${i === data.length - 1 ? 'text-violet-600 font-bold' : 'text-gray-400'}`}>
-              {d.label}
-            </span>
+            {d.label && (
+              <span className={`text-[9px] leading-none ${i === data.length - 1 ? 'text-violet-600 font-bold' : 'text-gray-400'}`}>
+                {d.label}
+              </span>
+            )}
           </div>
         ))}
       </div>
@@ -244,6 +276,8 @@ export default function Stats() {
     initialData: [],
   });
 
+  const [period, setPeriod] = useState(7);
+
   const { totalGames, totalCorrect, totalQuestions, totalScore, gamesThisWeek, activity, levelStats } = useMemo(() => {
     const totalGames = results.length;
     const totalCorrect = results.reduce((s, r) => s + r.correct_answers, 0);
@@ -261,10 +295,10 @@ export default function Stats() {
       totalQuestions,
       totalScore,
       gamesThisWeek,
-      activity: getActivityData(results),
+      activity: getActivityData(results, period),
       levelStats: getLevelStats(results),
     };
-  }, [results]);
+  }, [results, period]);
 
   const accuracy = totalQuestions > 0 ? Math.round((totalCorrect / totalQuestions) * 100) : 0;
 
@@ -369,7 +403,7 @@ export default function Stats() {
 
             {/* Activity chart */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <ActivityChart data={activity} />
+              <ActivityChart data={activity} period={period} onPeriodChange={setPeriod} />
             </motion.div>
 
             {/* Accuracy trend */}
