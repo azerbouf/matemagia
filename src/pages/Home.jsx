@@ -260,7 +260,7 @@ export default function Home() {
           playerName={isAuthenticated ? (profile?.display_name || user?.user_metadata?.full_name) : guestName}
           onSelect={handleLevelSelect}
         />
-        <div className="px-4 max-w-md mx-auto pb-4 space-y-2">
+        <div className="px-4 max-w-md mx-auto pt-6 pb-8 space-y-3">
           <a href={createPageUrl("Leaderboard")}>
             <Button
               variant="outline"
