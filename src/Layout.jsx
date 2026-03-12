@@ -1,7 +1,7 @@
 import React from "react";
 import { useAuth } from "@/lib/AuthContext";
 import { createPageUrl } from "@/utils";
-import { LogOut } from "lucide-react";
+import { LogOut, BarChart3 } from "lucide-react";
 
 export default function Layout({ children, currentPageName }) {
   const { user, profile, isAuthenticated, logout } = useAuth();
@@ -22,6 +22,13 @@ export default function Layout({ children, currentPageName }) {
               🧮 МатеМагия
             </a>
             <div className="flex items-center gap-2">
+              <a
+                href={createPageUrl("Stats")}
+                className="text-gray-400 hover:text-violet-600 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-violet-100"
+                title="Статистика"
+              >
+                <BarChart3 className="w-4 h-4" />
+              </a>
               <a
                 href={createPageUrl("Profile")}
                 className="flex items-center gap-2 bg-white hover:bg-violet-100 rounded-full px-3 py-1.5 transition-all border border-violet-200 shadow-sm"
