@@ -1,0 +1,12 @@
+score,correct_answers,player_name,total_questions,level,id,created_date,updated_date,created_by_id,created_by,is_sample
+"100","10","Evgeny","10","easy","69b289aacca588daef0892a2","2026-03-12T09:38:50.404000","2026-03-12T09:38:50.404000","69b1904e868a6af2537ca6aa","azerbouf@gmail.com","false"
+"400","8","Саша","10","bonus","69b1ceba0dc16d102e7f5d5c","2026-03-11T20:21:14.588000","2026-03-11T20:21:14.588000","anonymous","anonymous","false"
+"180","6","Yan","10","hard","69b1bb055b692aefc6a4857a","2026-03-11T18:57:09.253000","2026-03-11T18:57:09.253000","anonymous","anonymous","false"
+"1750","35","Yan","80","bonus","69b1b3d0302a2c10f939d90e","2026-03-11T18:26:24.891000","2026-03-12T07:25:16.506000","anonymous","anonymous","false"
+"30","3","Yan","10","easy","69b1b1255187dc19dbb29faa","2026-03-11T18:15:01.021000","2026-03-11T18:15:01.021000","anonymous","anonymous","false"
+"160","8","David","10","medium","69b1adb9495d3eccd862ed3a","2026-03-11T18:00:25.894000","2026-03-11T18:00:25.894000","anonymous","anonymous","false"
+"100","10","Аня","10","easy","69b1a71e04de49765b821ff3","2026-03-11T17:32:14.865000","2026-03-11T17:32:14.865000","anonymous","anonymous","false"
+"80","4","Yan","10","medium","69b1a48a28a9feedb6f9c843","2026-03-11T17:21:14.822000","2026-03-11T17:21:14.822000","anonymous","anonymous","false"
+"90","9","Юля","10","easy","69b1a256017427f7ddce3369","2026-03-11T17:11:50.749000","2026-03-11T17:11:50.749000","anonymous","anonymous","false"
+"1000","20","Nata","20","bonus","69b197cb2b5cf3610ae77f6f","2026-03-11T16:26:51.270000","2026-03-11T18:34:20.289000","anonymous","anonymous","false"
+"180","9","Nata","10","medium","69b19714677a06040c12158c","2026-03-11T16:23:48.785000","2026-03-11T16:23:48.785000","anonymous","anonymous","false"
