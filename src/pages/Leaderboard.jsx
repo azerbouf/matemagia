@@ -112,18 +112,18 @@ export default function Leaderboard() {
         </div>
 
         {/* Level tabs */}
-        <div className="grid grid-cols-5 gap-1.5 mb-6">
+        <div className="flex gap-1.5 mb-6 overflow-x-auto pb-1">
           {levelTabs.map((lvl) => (
             <button
               key={lvl}
               onClick={() => setActiveLevel(lvl)}
-              className={`py-2 rounded-full text-xs sm:text-sm font-bold transition-all ${
+              className={`py-2 px-3 rounded-full text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
                 activeLevel === lvl
                   ? `${levelColors[lvl]} text-white shadow-md`
                   : "bg-white text-gray-500 border border-gray-200"
               }`}
             >
-              {lvl === "daily" ? "📅" : ""} {LEVEL_LABELS[lvl]}
+              {lvl === "daily" ? "📅 Дня" : LEVEL_LABELS[lvl]}
             </button>
           ))}
         </div>
