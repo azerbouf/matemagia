@@ -140,19 +140,17 @@ export default function QuestionCard({
         </div>
       </div>
 
-      {/* Mascot (easy/medium only) */}
-      {(level === "easy" || level === "medium") && (
-        <div className="flex justify-center mb-3">
-          <Mascot
-            mood={
-              isAnswered
-                ? (timedOut ? "sad" : isCorrect ? "happy" : "sad")
-                : (timeLeft <= totalTime * 0.25 ? "hurry" : "thinking")
-            }
-            size={52}
-          />
-        </div>
-      )}
+      {/* Mascot */}
+      <div className="flex justify-center mb-3">
+        <Mascot
+          mood={
+            isAnswered
+              ? (timedOut ? "sad" : isCorrect ? "happy" : "sad")
+              : (timeLeft <= totalTime * 0.25 ? "hurry" : "thinking")
+          }
+          size={52}
+        />
+      </div>
 
       {/* Question */}
       <div className="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-3xl p-6 sm:p-8 text-center mb-6 shadow-xl shadow-violet-200">

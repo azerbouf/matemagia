@@ -122,8 +122,9 @@ const BODY_ANIM = {
   encouraging: { y: [0, -3, 0], transition: { duration: 0.7, repeat: 3 } },
 };
 
-export default function Mascot({ mood = "thinking", size = 64 }) {
+export default function Mascot({ mood = "thinking", size = 64, playerName }) {
   const phrase = useMemo(() => pickRandom(PHRASES[mood] || PHRASES.thinking), [mood]);
+  const bubbleText = playerName ? `${phrase} ${playerName}` : phrase;
 
   return (
     <div className="flex items-center justify-center gap-1.5">
@@ -182,7 +183,7 @@ export default function Mascot({ mood = "thinking", size = 64 }) {
       >
         <div className="absolute left-0 top-1/2 -translate-x-[5px] -translate-y-1/2 w-0 h-0 border-t-[4px] border-t-transparent border-b-[4px] border-b-transparent border-r-[5px] border-r-white" />
         <span className="font-bold text-gray-700 whitespace-nowrap" style={{ fontSize: Math.max(size * 0.19, 11) }}>
-          {phrase}
+          {bubbleText}
         </span>
       </motion.div>
     </div>

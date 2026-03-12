@@ -46,19 +46,9 @@ export default function GameSummary({
     >
       {percentage >= 70 && <Confetti count={40} mode="rain" />}
 
-      {(level === "easy" || level === "medium") ? (
-        <div className="mb-4 flex justify-center">
-          <Mascot mood={percentage >= 70 ? "celebrating" : "encouraging"} size={90} />
-        </div>
-      ) : (
-        <motion.div
-          animate={{ scale: [1, 1.2, 1] }}
-          transition={{ repeat: 2, duration: 0.5 }}
-          className="text-6xl mb-4"
-        >
-          {emoji}
-        </motion.div>
-      )}
+      <div className="mb-4 flex justify-center">
+        <Mascot mood={percentage >= 70 ? "celebrating" : "encouraging"} size={90} />
+      </div>
 
       <h2 className="text-2xl font-extrabold text-gray-800 mb-1">{message}</h2>
       <p className="text-gray-500 mb-6">{playerName}, уровень «{LEVEL_LABELS[level]}»</p>

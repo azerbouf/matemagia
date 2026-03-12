@@ -62,9 +62,8 @@ export default function LevelSelect({ playerName, onSelect }) {
         className="text-center mb-4"
       >
         <div className="flex justify-center mb-1">
-          <Mascot mood="greeting" size={64} />
+          <Mascot mood="greeting" size={64} playerName={playerName} />
         </div>
-        <h2 className="text-2xl font-extrabold text-gray-800">{playerName}</h2>
         <p className="text-gray-400 mt-0.5 text-sm">Выбери уровень сложности</p>
       </motion.div>
 
