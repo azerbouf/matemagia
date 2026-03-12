@@ -47,22 +47,22 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
-import Leaderboard from './pages/Leaderboard';
-import Home from './pages/Home';
 import Game from './pages/Game';
+import Home from './pages/Home';
+import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Leaderboard": Leaderboard,
-    "Home": Home,
     "Game": Game,
+    "Home": Home,
+    "Leaderboard": Leaderboard,
     "Profile": Profile,
 }
 
 export const pagesConfig = {
-    mainPage: "Leaderboard",
+    mainPage: "Home",
     Pages: PAGES,
     Layout: __Layout,
 };
