@@ -5,6 +5,7 @@ import { Check, X, ArrowRight, Lightbulb, Clock } from "lucide-react";
 import { getPointsPerQuestion, getSpeedBonus, TIMER_SECONDS } from "./mathUtils";
 import { playCorrectSound, playWrongSound } from "./sounds";
 import Confetti from "./Confetti";
+import Mascot from "./Mascot";
 
 export default function QuestionCard({
   question,
@@ -138,6 +139,20 @@ export default function QuestionCard({
           />
         </div>
       </div>
+
+      {/* Mascot (easy/medium only) */}
+      {(level === "easy" || level === "medium") && (
+        <div className="flex justify-center mb-3">
+          <Mascot
+            mood={
+              isAnswered
+                ? (timedOut ? "sad" : isCorrect ? "happy" : "sad")
+                : (timeLeft <= totalTime * 0.25 ? "hurry" : "thinking")
+            }
+            size={52}
+          />
+        </div>
+      )}
 
       {/* Question */}
       <div className="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-3xl p-6 sm:p-8 text-center mb-6 shadow-xl shadow-violet-200">

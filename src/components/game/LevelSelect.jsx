@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Star, Trophy, Zap, Crown, CalendarDays } from "lucide-react";
 import { getTodayUTC } from "./mathUtils";
+import Mascot from "./Mascot";
 
 const levels = [
   {
@@ -58,10 +59,13 @@ export default function LevelSelect({ playerName, onSelect }) {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-8"
+        className="text-center mb-6"
       >
+        <div className="flex justify-center mb-2">
+          <Mascot mood="greeting" size={68} />
+        </div>
         <p className="text-gray-500 text-sm">Привет,</p>
-        <h2 className="text-2xl font-extrabold text-gray-800">{playerName}! 👋</h2>
+        <h2 className="text-2xl font-extrabold text-gray-800">{playerName}!</h2>
         <p className="text-gray-400 mt-1 text-sm">Выбери уровень сложности</p>
       </motion.div>
 
