@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Check, X, ArrowRight, Lightbulb, Clock } from "lucide-react";
-import { getPointsPerQuestion, TIMER_SECONDS } from "./mathUtils";
+import { getPointsPerQuestion, getSpeedBonus, TIMER_SECONDS } from "./mathUtils";
+import { playCorrectSound, playWrongSound } from "./sounds";
+import Confetti from "./Confetti";
 
 export default function QuestionCard({
   question,
@@ -15,11 +17,13 @@ export default function QuestionCard({
   const [showExplanation, setShowExplanation] = useState(false);
   const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS[level] || 30);
   const [timedOut, setTimedOut] = useState(false);
+  const [shake, setShake] = useState(false);
   const timerRef = useRef(null);
 
   const isAnswered = selected !== null || timedOut;
   const isCorrect = selected === question.answer;
   const points = getPointsPerQuestion(level);
+  const speedBonus = isAnswered && isCorrect ? getSpeedBonus(level, timeLeft) : 0;
   const totalTime = TIMER_SECONDS[level] || 30;
 
   // Reset and start timer on new question
@@ -27,6 +31,7 @@ export default function QuestionCard({
     setSelected(null);
     setShowExplanation(false);
     setTimedOut(false);
+    setShake(false);
     setTimeLeft(totalTime);
   }, [question, totalTime]);
 
@@ -41,6 +46,7 @@ export default function QuestionCard({
           clearInterval(timerRef.current);
           setTimedOut(true);
           setShowExplanation(true);
+          playWrongSound();
           return 0;
         }
         return prev - 1;
@@ -53,7 +59,14 @@ export default function QuestionCard({
     if (isAnswered) return;
     clearInterval(timerRef.current);
     setSelected(option);
-    if (option !== question.answer) setShowExplanation(false);
+    if (option === question.answer) {
+      playCorrectSound();
+    } else {
+      playWrongSound();
+      setShowExplanation(false);
+      setShake(true);
+      setTimeout(() => setShake(false), 500);
+    }
   };
 
   const handleNext = () => {
@@ -89,6 +102,8 @@ export default function QuestionCard({
       exit={{ opacity: 0, x: -40 }}
       className="px-4 py-6 max-w-md mx-auto"
     >
+      {isAnswered && isCorrect && !timedOut && <Confetti count={18} />}
+
       {/* Progress */}
       <div className="mb-4">
         <div className="flex justify-between items-center mb-2">
@@ -133,7 +148,11 @@ export default function QuestionCard({
       </div>
 
       {/* Options */}
-      <div className="grid grid-cols-2 gap-3 mb-4">
+      <motion.div
+        animate={shake ? { x: [0, -10, 10, -8, 8, -4, 4, 0] } : {}}
+        transition={{ duration: 0.4 }}
+        className="grid grid-cols-2 gap-3 mb-4"
+      >
         {question.options.map((option, i) => (
           <motion.button
             key={i}
@@ -148,7 +167,7 @@ export default function QuestionCard({
             </div>
           </motion.button>
         ))}
-      </div>
+      </motion.div>
 
       {/* Result feedback */}
       <AnimatePresence>
@@ -167,7 +186,10 @@ export default function QuestionCard({
             ) : isCorrect ? (
               <div className="text-center py-3 rounded-2xl bg-green-50 border border-green-200">
                 <span className="text-2xl">🎉</span>
-                <p className="text-green-700 font-bold">Правильно! +{points}</p>
+                <p className="text-green-700 font-bold">
+                  Правильно! +{points}
+                  {speedBonus > 0 && <span className="text-emerald-500 ml-1">+{speedBonus}⚡</span>}
+                </p>
               </div>
             ) : (
               <div className="text-center py-3 rounded-2xl bg-red-50 border border-red-200">

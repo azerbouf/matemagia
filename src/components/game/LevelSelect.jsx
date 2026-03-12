@@ -1,6 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Star, Trophy, Zap, Crown } from "lucide-react";
+import { Star, Trophy, Zap, Crown, CalendarDays } from "lucide-react";
+import { getTodayUTC } from "./mathUtils";
 
 const levels = [
   {
@@ -45,6 +46,12 @@ const levels = [
   },
 ];
 
+function formatDateRu() {
+  const d = new Date();
+  const months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  return `${d.getDate()} ${months[d.getMonth()]}`;
+}
+
 export default function LevelSelect({ playerName, onSelect }) {
   return (
     <div className="px-4 py-6 max-w-md mx-auto">
@@ -57,6 +64,25 @@ export default function LevelSelect({ playerName, onSelect }) {
         <h2 className="text-2xl font-extrabold text-gray-800">{playerName}! 👋</h2>
         <p className="text-gray-400 mt-1 text-sm">Выбери уровень сложности</p>
       </motion.div>
+
+      {/* Daily Challenge */}
+      <motion.button
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        onClick={() => onSelect("daily")}
+        className="w-full mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-400 via-pink-500 to-violet-500 shadow-lg shadow-pink-200 text-white text-left transition-all duration-200 active:scale-95 hover:scale-[1.02] relative overflow-hidden"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.15),transparent_60%)]" />
+        <div className="flex items-center gap-4 relative">
+          <span className="text-3xl">📅</span>
+          <div className="flex-1">
+            <h3 className="font-bold text-lg">Ежедневный челлендж</h3>
+            <p className="text-white/80 text-sm">Одни задачки для всех · {formatDateRu()}</p>
+            <p className="text-white/60 text-xs mt-1">25 очков за ответ · микс уровней</p>
+          </div>
+          <CalendarDays className="w-6 h-6 text-white/60" />
+        </div>
+      </motion.button>
 
       <div className="space-y-4">
         {levels.map((level, index) => (

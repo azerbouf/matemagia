@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ArrowLeft, Medal, Crown, Trophy, User } from "lucide-react";
 import { motion } from "framer-motion";
-import { LEVEL_LABELS } from "../components/game/mathUtils";
+import { LEVEL_LABELS, getTodayUTC } from "../components/game/mathUtils";
 import { createPageUrl } from "@/utils";
 
-const levelTabs = ["easy", "medium", "hard", "bonus"];
+const levelTabs = ["daily", "easy", "medium", "hard", "bonus"];
 const levelColors = {
+  daily: "bg-gradient-to-r from-amber-500 to-pink-500",
   easy: "bg-green-500",
   medium: "bg-orange-500",
   hard: "bg-red-500",
@@ -31,7 +32,7 @@ function getRankBg(index) {
 }
 
 export default function Leaderboard() {
-  const [activeLevel, setActiveLevel] = useState("easy");
+  const [activeLevel, setActiveLevel] = useState("daily");
 
   const { data: results, isLoading } = useQuery({
     queryKey: ["leaderboard"],
@@ -40,7 +41,7 @@ export default function Leaderboard() {
         .from('game_results')
         .select('*')
         .order('score', { ascending: false })
-        .limit(200);
+        .limit(500);
       if (error) throw error;
       return data || [];
     },
@@ -48,7 +49,17 @@ export default function Leaderboard() {
   });
 
   const filtered = (() => {
-    const byLevel = results.filter((r) => r.level === activeLevel);
+    const isDaily = activeLevel === "daily";
+    const today = getTodayUTC();
+
+    let byLevel = results.filter((r) => r.level === activeLevel);
+
+    if (isDaily) {
+      byLevel = byLevel.filter((r) =>
+        r.created_at && r.created_at.slice(0, 10) === today
+      );
+    }
+
     const grouped = {};
     for (const r of byLevel) {
       const key = r.user_id || `guest_${r.player_name}`;
@@ -62,10 +73,19 @@ export default function Leaderboard() {
           games: 0,
         };
       }
-      grouped[key].score += r.score;
-      grouped[key].correct_answers += r.correct_answers;
-      grouped[key].total_questions += r.total_questions;
-      grouped[key].games += 1;
+      if (isDaily) {
+        if (r.score > grouped[key].score) {
+          grouped[key].score = r.score;
+          grouped[key].correct_answers = r.correct_answers;
+          grouped[key].total_questions = r.total_questions;
+        }
+        grouped[key].games += 1;
+      } else {
+        grouped[key].score += r.score;
+        grouped[key].correct_answers += r.correct_answers;
+        grouped[key].total_questions += r.total_questions;
+        grouped[key].games += 1;
+      }
     }
     return Object.entries(grouped)
       .map(([key, data]) => ({ id: key, ...data }))
@@ -92,7 +112,7 @@ export default function Leaderboard() {
         </div>
 
         {/* Level tabs */}
-        <div className="grid grid-cols-4 gap-1.5 mb-6">
+        <div className="grid grid-cols-5 gap-1.5 mb-6">
           {levelTabs.map((lvl) => (
             <button
               key={lvl}
@@ -103,7 +123,7 @@ export default function Leaderboard() {
                   : "bg-white text-gray-500 border border-gray-200"
               }`}
             >
-              {LEVEL_LABELS[lvl]}
+              {lvl === "daily" ? "📅" : ""} {LEVEL_LABELS[lvl]}
             </button>
           ))}
         </div>
@@ -142,7 +162,11 @@ export default function Leaderboard() {
                   )}
                 </div>
                 <p className="text-xs text-gray-400">
-                  {result.correct_answers}/{result.total_questions} верных · {result.games} {result.games === 1 ? 'игра' : result.games < 5 ? 'игры' : 'игр'}
+                  {result.correct_answers}/{result.total_questions} верных
+                  {activeLevel === "daily"
+                    ? (result.games > 1 ? ` · лучшая из ${result.games}` : '')
+                    : ` · ${result.games} ${result.games === 1 ? 'игра' : result.games < 5 ? 'игры' : 'игр'}`
+                  }
                 </p>
               </div>
               <div className="text-right flex-shrink-0">

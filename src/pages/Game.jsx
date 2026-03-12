@@ -6,14 +6,17 @@ import ExitConfirmDialog from "../components/game/ExitConfirmDialog";
 import AchievementToast from "../components/game/AchievementToast";
 import {
   generateQuestion,
+  generateDailyQuestions,
   getPointsPerQuestion,
+  getSpeedBonus,
   TOTAL_QUESTIONS,
   LEVEL_LABELS,
   TIMER_SECONDS,
 } from "../components/game/mathUtils";
+import { playBadgeSound, toggleMute, isMuted } from "../components/game/sounds";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
-import { Home } from "lucide-react";
+import { Home, Volume2, VolumeX } from "lucide-react";
 
 export default function Game() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -29,13 +32,16 @@ export default function Game() {
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [toastBadge, setToastBadge] = useState(null);
   const [userId, setUserId] = useState(null);
+  const [soundMuted, setSoundMuted] = useState(isMuted());
 
   const streakRef = useRef(0);
   const earnedBadgesRef = useRef(new Set());
   const toastTimerRef = useRef(null);
 
   const [questions] = useState(() =>
-    Array.from({ length: TOTAL_QUESTIONS }, () => generateQuestion(level))
+    level === "daily"
+      ? generateDailyQuestions()
+      : Array.from({ length: TOTAL_QUESTIONS }, () => generateQuestion(level))
   );
 
   useEffect(() => {
@@ -49,8 +55,13 @@ export default function Game() {
   const showBadgeToast = useCallback((badgeId) => {
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     setToastBadge(badgeId);
+    playBadgeSound();
     toastTimerRef.current = setTimeout(() => setToastBadge(null), 3000);
   }, []);
+
+  const handleToggleMute = () => {
+    setSoundMuted(toggleMute());
+  };
 
   const handleAnswer = useCallback(
     async (isCorrect, timeLeft) => {
@@ -76,7 +87,9 @@ export default function Game() {
         streakRef.current = 0;
       }
 
-      const newScore = isCorrect ? score + getPointsPerQuestion(level) : score;
+      const basePoints = getPointsPerQuestion(level);
+      const speedBonus = isCorrect ? getSpeedBonus(level, timeLeft) : 0;
+      const newScore = isCorrect ? score + basePoints + speedBonus : score;
       const newCorrect = isCorrect ? correctAnswers + 1 : correctAnswers;
 
       if (isCorrect) {
@@ -85,8 +98,14 @@ export default function Game() {
       }
 
       if (currentIndex + 1 >= TOTAL_QUESTIONS) {
-        if (newCorrect === TOTAL_QUESTIONS) earnedBadgesRef.current.add("perfect_game");
-        if (level === "bonus" && newCorrect >= 8) earnedBadgesRef.current.add("bonus_champ");
+        if (newCorrect === TOTAL_QUESTIONS) {
+          earnedBadgesRef.current.add("perfect_game");
+          showBadgeToast("perfect_game");
+        }
+        if (level === "bonus" && newCorrect >= 8) {
+          earnedBadgesRef.current.add("bonus_champ");
+          showBadgeToast("bonus_champ");
+        }
 
         setFinished(true);
         if (!saved) {
@@ -167,8 +186,16 @@ export default function Game() {
             <p className="text-sm font-bold text-gray-700">{LEVEL_LABELS[level]}</p>
           </div>
         </div>
-        <div className="bg-violet-100 text-violet-700 font-bold px-4 py-2 rounded-full text-sm">
-          ⭐ {score}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleToggleMute}
+            className="text-gray-400 hover:text-gray-600 p-1 rounded-full"
+          >
+            {soundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+          </button>
+          <div className="bg-violet-100 text-violet-700 font-bold px-4 py-2 rounded-full text-sm">
+            ⭐ {score}
+          </div>
         </div>
       </div>
 

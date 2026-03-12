@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { RotateCcw, Trophy, Home } from "lucide-react";
 import { LEVEL_LABELS, getPointsPerQuestion, TOTAL_QUESTIONS } from "./mathUtils";
+import { playVictorySound } from "./sounds";
+import Confetti from "./Confetti";
 
 export default function GameSummary({
   playerName,
@@ -12,8 +14,13 @@ export default function GameSummary({
   onPlayAgain,
   onGoHome,
 }) {
-  const maxScore = getPointsPerQuestion(level) * TOTAL_QUESTIONS;
+  const baseMax = getPointsPerQuestion(level) * TOTAL_QUESTIONS;
+  const maxScore = Math.round(baseMax * 1.5);
   const percentage = Math.round((correctAnswers / TOTAL_QUESTIONS) * 100);
+
+  useEffect(() => {
+    if (percentage >= 70) playVictorySound();
+  }, [percentage]);
 
   let emoji, message;
   if (percentage === 100) {
@@ -36,6 +43,8 @@ export default function GameSummary({
       animate={{ opacity: 1, scale: 1 }}
       className="px-4 py-8 max-w-md mx-auto text-center"
     >
+      {percentage >= 70 && <Confetti count={40} mode="rain" />}
+
       <motion.div
         animate={{ scale: [1, 1.2, 1] }}
         transition={{ repeat: 2, duration: 0.5 }}

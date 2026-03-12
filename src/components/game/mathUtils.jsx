@@ -164,6 +164,29 @@ function generateBonusQuestion() {
   return { display, answer, explanation };
 }
 
+// ─── Seeded PRNG for daily challenge ─────────────────────────────────────────
+
+function seededRandom(seed) {
+  let h = 0;
+  for (let i = 0; i < seed.length; i++) {
+    h = Math.imul(31, h) + seed.charCodeAt(i) | 0;
+  }
+  return function () {
+    h |= 0; h = h + 0x6D2B79F5 | 0;
+    let t = Math.imul(h ^ h >>> 15, 1 | h);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+
+function generateDailyQuestion() {
+  const r = Math.random();
+  if (r < 0.25) return generateEasyQuestion();
+  if (r < 0.55) return generateMediumQuestion();
+  if (r < 0.80) return generateHardQuestion();
+  return generateBonusQuestion();
+}
+
 // ─── Public API ───────────────────────────────────────────────────────────────
 
 export function generateQuestion(level) {
@@ -173,11 +196,28 @@ export function generateQuestion(level) {
     case "medium": q = generateMediumQuestion(); break;
     case "hard":   q = generateHardQuestion();   break;
     case "bonus":  q = generateBonusQuestion();  break;
+    case "daily":  q = generateDailyQuestion();  break;
     default:       q = generateEasyQuestion();
   }
   const wrongAnswers = generateWrongAnswers(q.answer);
   const options = shuffle([q.answer, ...wrongAnswers]);
   return { display: q.display, answer: q.answer, options, explanation: q.explanation };
+}
+
+export function generateDailyQuestions() {
+  const today = new Date().toISOString().slice(0, 10);
+  const rng = seededRandom('daily-' + today);
+  const original = Math.random;
+  Math.random = rng;
+  try {
+    return Array.from({ length: TOTAL_QUESTIONS }, () => generateQuestion("daily"));
+  } finally {
+    Math.random = original;
+  }
+}
+
+export function getTodayUTC() {
+  return new Date().toISOString().slice(0, 10);
 }
 
 export function getPointsPerQuestion(level) {
@@ -186,8 +226,15 @@ export function getPointsPerQuestion(level) {
     case "medium": return 20;
     case "hard":   return 30;
     case "bonus":  return 50;
+    case "daily":  return 25;
     default:       return 10;
   }
+}
+
+export function getSpeedBonus(level, timeLeft) {
+  const totalTime = TIMER_SECONDS[level] || 30;
+  const base = getPointsPerQuestion(level);
+  return Math.round(base * 0.5 * (timeLeft / totalTime));
 }
 
 export const TOTAL_QUESTIONS = 10;
@@ -197,6 +244,7 @@ export const LEVEL_LABELS = {
   medium: "Средний",
   hard:   "Тяжёлый",
   bonus:  "Бонусный",
+  daily:  "Ежедневный",
 };
 
 export const TIMER_SECONDS = {
@@ -204,4 +252,5 @@ export const TIMER_SECONDS = {
   medium: 25,
   hard:   20,
   bonus:  20,
+  daily:  25,
 };
