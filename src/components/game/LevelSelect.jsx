@@ -55,17 +55,17 @@ function formatDateRu() {
 
 export default function LevelSelect({ playerName, onSelect }) {
   return (
-    <div className="px-4 py-6 max-w-md mx-auto">
+    <div className="px-4 pt-5 pb-2 max-w-md mx-auto">
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-6"
+        className="text-center mb-4"
       >
-        <div className="flex justify-center mb-2">
-          <Mascot mood="greeting" size={68} />
+        <div className="flex justify-center mb-1">
+          <Mascot mood="greeting" size={64} />
         </div>
         <h2 className="text-2xl font-extrabold text-gray-800">{playerName}</h2>
-        <p className="text-gray-400 mt-1 text-sm">Выбери уровень сложности</p>
+        <p className="text-gray-400 mt-0.5 text-sm">Выбери уровень сложности</p>
       </motion.div>
 
       {/* Daily Challenge */}
@@ -73,7 +73,7 @@ export default function LevelSelect({ playerName, onSelect }) {
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         onClick={() => onSelect("daily")}
-        className="w-full mb-6 p-4 rounded-2xl bg-gradient-to-r from-amber-400 via-pink-500 to-violet-500 shadow-lg shadow-pink-200 text-white text-left transition-all duration-200 active:scale-95 hover:scale-[1.02] relative overflow-hidden"
+        className="w-full mb-4 p-4 rounded-2xl bg-gradient-to-r from-amber-400 via-pink-500 to-violet-500 shadow-lg shadow-pink-200 text-white text-left transition-all duration-200 active:scale-95 hover:scale-[1.02] relative overflow-hidden"
       >
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.15),transparent_60%)]" />
         <div className="flex items-center gap-4 relative">
@@ -87,7 +87,7 @@ export default function LevelSelect({ playerName, onSelect }) {
         </div>
       </motion.button>
 
-      <div className="space-y-4">
+      <div className="space-y-3">
         {levels.map((level, index) => (
           <motion.button
             key={level.id}
