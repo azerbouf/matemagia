@@ -5,12 +5,13 @@ import { LogOut, BarChart3, Trophy, User } from "lucide-react";
 
 function ProfileDropdown({ avatarUrl, displayName, logout }) {
   const [open, setOpen] = useState(false);
+  const [confirmLogout, setConfirmLogout] = useState(false);
   const ref = useRef(null);
 
   useEffect(() => {
     if (!open) return;
     const handleClick = (e) => {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (ref.current && !ref.current.contains(e.target)) { setOpen(false); setConfirmLogout(false); }
     };
     document.addEventListener("mousedown", handleClick);
     document.addEventListener("touchstart", handleClick);
@@ -35,21 +36,43 @@ function ProfileDropdown({ avatarUrl, displayName, logout }) {
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-10 bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-44 z-50">
-          <a
-            href={createPageUrl("Profile")}
-            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-violet-50 transition-colors"
-          >
-            <User className="w-4 h-4 text-violet-500" />
-            Профиль
-          </a>
-          <button
-            onClick={() => { setOpen(false); logout(); }}
-            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
-          >
-            <LogOut className="w-4 h-4" />
-            Выйти
-          </button>
+        <div className="absolute right-0 top-10 bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-48 z-50">
+          {!confirmLogout ? (
+            <>
+              <a
+                href={createPageUrl("Profile")}
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 hover:bg-violet-50 transition-colors"
+              >
+                <User className="w-4 h-4 text-violet-500" />
+                Профиль
+              </a>
+              <button
+                onClick={() => setConfirmLogout(true)}
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors w-full text-left"
+              >
+                <LogOut className="w-4 h-4" />
+                Выйти
+              </button>
+            </>
+          ) : (
+            <div className="px-4 py-3">
+              <p className="text-sm text-gray-700 font-medium mb-3">Выйти из аккаунта?</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => { setOpen(false); setConfirmLogout(false); logout(); }}
+                  className="flex-1 py-1.5 text-sm font-bold text-white bg-red-500 hover:bg-red-600 rounded-lg transition-colors"
+                >
+                  Да
+                </button>
+                <button
+                  onClick={() => setConfirmLogout(false)}
+                  className="flex-1 py-1.5 text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                >
+                  Нет
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>
