@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { supabase } from "@/api/supabaseClient";
 import QuestionCard from "../components/game/QuestionCard";
 import GameSummary from "../components/game/GameSummary";
 import ExitConfirmDialog from "../components/game/ExitConfirmDialog";
@@ -28,7 +28,7 @@ export default function Game() {
   const [saved, setSaved] = useState(false);
   const [showExitDialog, setShowExitDialog] = useState(false);
   const [toastBadge, setToastBadge] = useState(null);
-  const [userEmail, setUserEmail] = useState(null);
+  const [userId, setUserId] = useState(null);
 
   const streakRef = useRef(0);
   const earnedBadgesRef = useRef(new Set());
@@ -40,7 +40,9 @@ export default function Game() {
 
   useEffect(() => {
     if (!isGuest) {
-      base44.auth.me().then((u) => setUserEmail(u.email)).catch(() => {});
+      supabase.auth.getUser().then(({ data }) => {
+        if (data?.user) setUserId(data.user.id);
+      });
     }
   }, [isGuest]);
 
@@ -89,21 +91,26 @@ export default function Game() {
         setFinished(true);
         if (!saved) {
           setSaved(true);
-          await base44.entities.GameResult.create({
+          await supabase.from('game_results').insert({
             player_name: playerName,
             level,
             score: newScore,
             total_questions: TOTAL_QUESTIONS,
             correct_answers: newCorrect,
+            is_guest: isGuest,
+            user_id: userId,
           });
-          if (!isGuest && earnedBadgesRef.current.size > 0 && userEmail) {
-            const profiles = await base44.entities.PlayerProfile.filter({ created_by: userEmail });
+          if (!isGuest && earnedBadgesRef.current.size > 0 && userId) {
+            const { data: profiles } = await supabase
+              .from('player_profiles')
+              .select('*')
+              .eq('user_id', userId);
             const existing = profiles?.[0]?.badges || [];
             const merged = [...new Set([...existing, ...Array.from(earnedBadgesRef.current)])];
             if (profiles?.[0]) {
-              await base44.entities.PlayerProfile.update(profiles[0].id, { badges: merged });
+              await supabase.from('player_profiles').update({ badges: merged }).eq('id', profiles[0].id);
             } else {
-              await base44.entities.PlayerProfile.create({ player_name: playerName, badges: merged });
+              await supabase.from('player_profiles').insert({ user_id: userId, player_name: playerName, badges: merged });
             }
           }
         }
@@ -111,7 +118,7 @@ export default function Game() {
         setCurrentIndex(currentIndex + 1);
       }
     },
-    [currentIndex, score, correctAnswers, level, playerName, saved, userEmail, isGuest, showBadgeToast]
+    [currentIndex, score, correctAnswers, level, playerName, saved, userId, isGuest, showBadgeToast]
   );
 
   const handlePlayAgain = () => {

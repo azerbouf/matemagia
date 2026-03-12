@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { base44 } from "@/api/base44Client";
+import { supabase } from "@/api/supabaseClient";
+import { useAuth } from "@/lib/AuthContext";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,8 +10,7 @@ import { createPageUrl } from "@/utils";
 import { ACHIEVEMENTS } from "../components/game/achievementsConfig";
 
 export default function Profile() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const { user, profile, isAuthenticated, isLoading: authLoading, loadProfile } = useAuth();
   const [saving, setSaving] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [displayName, setDisplayName] = useState("");
@@ -18,35 +18,35 @@ export default function Profile() {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    base44.auth
-      .me()
-      .then((u) => {
-        setUser(u);
-        setDisplayName(u.display_name || u.full_name || "");
-        setAge(u.age ? String(u.age) : "");
-        setLoading(false);
-      })
-      .catch(() => {
-        base44.auth.redirectToLogin(window.location.href);
-      });
-  }, []);
+    if (!authLoading && !isAuthenticated) {
+      window.location.href = createPageUrl("Home");
+    }
+  }, [authLoading, isAuthenticated]);
 
-  const { data: profiles } = useQuery({
-    queryKey: ["playerProfile", user?.email],
-    queryFn: () => base44.entities.PlayerProfile.filter({ created_by: user.email }),
-    enabled: !!user,
-    initialData: [],
-  });
+  useEffect(() => {
+    if (profile) {
+      setDisplayName(profile.display_name || user?.user_metadata?.full_name || "");
+      setAge(profile.age ? String(profile.age) : "");
+    } else if (user) {
+      setDisplayName(user.user_metadata?.full_name || "");
+    }
+  }, [profile, user]);
 
-  const badges = profiles?.[0]?.badges || [];
+  const badges = profile?.badges || [];
 
   const handleSave = async () => {
     setSaving(true);
-    await base44.auth.updateMe({
-      display_name: displayName,
-      age: age ? Number(age) : null,
-    });
-    setUser((prev) => ({ ...prev, display_name: displayName, age: age ? Number(age) : null }));
+    if (profile) {
+      await supabase
+        .from('player_profiles')
+        .update({ display_name: displayName, age: age ? Number(age) : null })
+        .eq('id', profile.id);
+    } else {
+      await supabase
+        .from('player_profiles')
+        .insert({ user_id: user.id, display_name: displayName, age: age ? Number(age) : null, badges: [] });
+    }
+    await loadProfile(user.id);
     setSaving(false);
   };
 
@@ -54,13 +54,28 @@ export default function Profile() {
     const file = e.target.files[0];
     if (!file) return;
     setUploadingAvatar(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    await base44.auth.updateMe({ avatar_url: file_url });
-    setUser((prev) => ({ ...prev, avatar_url: file_url }));
+
+    const fileExt = file.name.split('.').pop();
+    const filePath = `${user.id}/avatar.${fileExt}`;
+
+    await supabase.storage.from('avatars').upload(filePath, file, { upsert: true });
+    const { data: { publicUrl } } = supabase.storage.from('avatars').getPublicUrl(filePath);
+
+    if (profile) {
+      await supabase
+        .from('player_profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', profile.id);
+    } else {
+      await supabase
+        .from('player_profiles')
+        .insert({ user_id: user.id, avatar_url: publicUrl, display_name: displayName, badges: [] });
+    }
+    await loadProfile(user.id);
     setUploadingAvatar(false);
   };
 
-  if (loading) {
+  if (authLoading || !user) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
@@ -84,8 +99,8 @@ export default function Profile() {
         <div className="flex flex-col items-center mb-8">
           <div className="relative">
             <div className="w-24 h-24 rounded-full overflow-hidden bg-violet-100 border-4 border-violet-200 shadow-lg">
-              {user.avatar_url ? (
-                <img src={user.avatar_url} className="w-full h-full object-cover" alt="avatar" />
+              {profile?.avatar_url ? (
+                <img src={profile.avatar_url} className="w-full h-full object-cover" alt="avatar" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-4xl font-extrabold text-violet-400">
                   {(displayName || "?")[0]?.toUpperCase()}

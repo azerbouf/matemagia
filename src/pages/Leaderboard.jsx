@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { base44 } from "@/api/base44Client";
+import { supabase } from "@/api/supabaseClient";
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -31,11 +31,19 @@ function getRankBg(index) {
 }
 
 export default function Leaderboard() {
-  const [activeLevel, setActiveLevel] = React.useState("easy");
+  const [activeLevel, setActiveLevel] = useState("easy");
 
   const { data: results, isLoading } = useQuery({
     queryKey: ["leaderboard"],
-    queryFn: () => base44.entities.GameResult.list("-score", 200),
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('game_results')
+        .select('*')
+        .order('score', { ascending: false })
+        .limit(200);
+      if (error) throw error;
+      return data || [];
+    },
     initialData: [],
   });
 
@@ -106,7 +114,7 @@ export default function Leaderboard() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-1.5">
                   <p className="font-bold text-gray-800 truncate">{result.player_name}</p>
-                  {result.created_by === "anonymous" && (
+                  {result.is_guest && (
                     <span title="Гость">
                       <User className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
                     </span>
