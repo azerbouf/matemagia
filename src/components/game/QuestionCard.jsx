@@ -13,6 +13,7 @@ export default function QuestionCard({
   totalQuestions,
   level,
   onAnswer,
+  onTimerTick,
 }) {
   const [selected, setSelected] = useState(null);
   const [showExplanation, setShowExplanation] = useState(false);
@@ -55,6 +56,10 @@ export default function QuestionCard({
     }, 1000);
     return () => clearInterval(timerRef.current);
   }, [isAnswered, question]);
+
+  useEffect(() => {
+    if (onTimerTick) onTimerTick(timeLeft, totalTime);
+  }, [timeLeft, totalTime, onTimerTick]);
 
   const handleSelect = (option) => {
     if (isAnswered) return;
@@ -119,23 +124,6 @@ export default function QuestionCard({
             initial={{ width: 0 }}
             animate={{ width: `${(questionNumber / totalQuestions) * 100}%` }}
             transition={{ duration: 0.5 }}
-          />
-        </div>
-      </div>
-
-      {/* Timer */}
-      <div className="mb-4">
-        <div className="flex items-center justify-between mb-1">
-          <div className={`flex items-center gap-1 ${timerTextColor} font-bold text-sm`}>
-            <Clock className="w-4 h-4" />
-            <span>{timeLeft} сек</span>
-          </div>
-          <span className="text-xs text-gray-400">{totalTime} сек всего</span>
-        </div>
-        <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-          <motion.div
-            className={`h-full bg-gradient-to-r ${timerColor} rounded-full transition-all duration-1000`}
-            style={{ width: `${(timeLeft / totalTime) * 100}%` }}
           />
         </div>
       </div>

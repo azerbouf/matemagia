@@ -16,7 +16,7 @@ import {
 import { playBadgeSound, toggleMute, isMuted } from "../components/game/sounds";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
-import { Home, Volume2, VolumeX } from "lucide-react";
+import { Home, Volume2, VolumeX, Clock } from "lucide-react";
 
 export default function Game() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -33,6 +33,7 @@ export default function Game() {
   const [toastBadge, setToastBadge] = useState(null);
   const [userId, setUserId] = useState(null);
   const [soundMuted, setSoundMuted] = useState(isMuted());
+  const [timerInfo, setTimerInfo] = useState({ timeLeft: 0, totalTime: 1 });
 
   const streakRef = useRef(0);
   const earnedBadgesRef = useRef(new Set());
@@ -62,6 +63,10 @@ export default function Game() {
   const handleToggleMute = () => {
     setSoundMuted(toggleMute());
   };
+
+  const handleTimerTick = useCallback((timeLeft, totalTime) => {
+    setTimerInfo({ timeLeft, totalTime });
+  }, []);
 
   const handleAnswer = useCallback(
     async (isCorrect, timeLeft) => {
@@ -171,19 +176,44 @@ export default function Game() {
         onConfirm={() => { window.location.href = createPageUrl("Home"); }}
         onCancel={() => setShowExitDialog(false)}
       />
-      <div className="px-4 pt-4 max-w-md mx-auto flex justify-between items-center">
+      <div className="px-4 pt-3 pb-1 max-w-md mx-auto flex justify-between items-center">
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setShowExitDialog(true)}
-            className="rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 w-9 h-9"
+            className="rounded-full text-gray-400 hover:text-red-500 hover:bg-red-50 w-10 h-10"
           >
             <Home className="w-5 h-5" />
           </Button>
           <div>
             <p className="text-xs text-gray-400">{playerName}</p>
             <p className="text-sm font-bold text-gray-700">{LEVEL_LABELS[level]}</p>
+          </div>
+        </div>
+        {/* Timer */}
+        <div className="flex flex-col items-center">
+          <div className={`flex items-center gap-1 font-bold text-lg ${
+            timerInfo.timeLeft > timerInfo.totalTime * 0.5
+              ? "text-emerald-600"
+              : timerInfo.timeLeft > timerInfo.totalTime * 0.25
+              ? "text-amber-600"
+              : "text-red-600"
+          }`}>
+            <Clock className="w-4 h-4" />
+            <span>{timerInfo.timeLeft}</span>
+          </div>
+          <div className="w-16 h-1.5 bg-gray-200 rounded-full overflow-hidden mt-0.5">
+            <div
+              className={`h-full rounded-full transition-all duration-1000 bg-gradient-to-r ${
+                timerInfo.timeLeft > timerInfo.totalTime * 0.5
+                  ? "from-green-400 to-emerald-500"
+                  : timerInfo.timeLeft > timerInfo.totalTime * 0.25
+                  ? "from-yellow-400 to-amber-500"
+                  : "from-red-400 to-rose-500"
+              }`}
+              style={{ width: `${(timerInfo.timeLeft / timerInfo.totalTime) * 100}%` }}
+            />
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -193,7 +223,7 @@ export default function Game() {
           >
             {soundMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
           </button>
-          <div className="bg-violet-100 text-violet-700 font-bold px-4 py-2 rounded-full text-sm">
+          <div className="bg-violet-100 text-violet-700 font-bold px-3 py-1.5 rounded-full text-sm">
             ⭐ {score}
           </div>
         </div>
@@ -205,6 +235,7 @@ export default function Game() {
         totalQuestions={TOTAL_QUESTIONS}
         level={level}
         onAnswer={handleAnswer}
+        onTimerTick={handleTimerTick}
       />
     </div>
   );

@@ -275,7 +275,7 @@ export default function Home() {
             >
               <Trophy className="w-5 h-5" />
             </a>
-            {isAuthenticated && (
+            {isAuthenticated ? (
               <>
                 <a
                   href={createPageUrl("Stats")}
@@ -290,6 +290,14 @@ export default function Home() {
                   logout={() => supabase.auth.signOut().then(() => window.location.reload())}
                 />
               </>
+            ) : (
+              <button
+                onClick={() => setMode("email-login")}
+                className="text-xs font-bold text-violet-600 bg-violet-50 hover:bg-violet-100 px-3 py-1.5 rounded-full border border-violet-200 transition-all"
+              >
+                <LogIn className="w-3.5 h-3.5 inline mr-1" />
+                Войти
+              </button>
             )}
           </div>
         </div>
@@ -299,18 +307,6 @@ export default function Home() {
           playerName={isAuthenticated ? (profile?.display_name || user?.user_metadata?.full_name) : guestName}
           onSelect={handleLevelSelect}
         />
-        {!isAuthenticated && (
-          <div className="px-4 max-w-md mx-auto pt-6 pb-8">
-            <Button
-              onClick={() => setMode("email-login")}
-              variant="outline"
-              className="w-full h-11 rounded-2xl border-2 border-violet-200 text-violet-600 hover:bg-violet-50"
-            >
-              <LogIn className="w-5 h-5 mr-2" />
-              Войти в аккаунт
-            </Button>
-          </div>
-        )}
       </div>
     </div>
   );
