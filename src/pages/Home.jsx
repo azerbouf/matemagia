@@ -5,7 +5,8 @@ import LevelSelect from "../components/game/LevelSelect";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trophy, Loader2, Sparkles, LogIn, User, Mail, BarChart3, LogOut } from "lucide-react";
+import { Trophy, Loader2, Sparkles, LogIn, User, Mail, BarChart3 } from "lucide-react";
+import ProfileDropdown from "@/components/ProfileDropdown";
 import { motion } from "framer-motion";
 
 export default function Home() {
@@ -275,13 +276,20 @@ export default function Home() {
               <Trophy className="w-4 h-4" />
             </a>
             {isAuthenticated && (
-              <a
-                href={createPageUrl("Stats")}
-                className="text-gray-400 hover:text-violet-600 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-violet-100"
-                title="Статистика"
-              >
-                <BarChart3 className="w-4 h-4" />
-              </a>
+              <>
+                <a
+                  href={createPageUrl("Stats")}
+                  className="text-gray-400 hover:text-violet-600 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-violet-100"
+                  title="Статистика"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                </a>
+                <ProfileDropdown
+                  avatarUrl={headerAvatarUrl}
+                  displayName={headerDisplayName}
+                  logout={() => supabase.auth.signOut().then(() => window.location.reload())}
+                />
+              </>
             )}
           </div>
         </div>
