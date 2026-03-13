@@ -22,22 +22,22 @@ export default function Layout({ children, currentPageName }) {
             >
               🧮 МатеМагия
             </a>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <a
                 href={createPageUrl("Leaderboard")}
-                className="text-gray-400 hover:text-amber-600 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-amber-50"
+                className="text-gray-400 hover:text-amber-600 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:bg-amber-50"
                 title="Таблица лидеров"
               >
-                <Trophy className="w-4 h-4" />
+                <Trophy className="w-5 h-5" />
               </a>
               {isAuthenticated && (
                 <>
                   <a
                     href={createPageUrl("Stats")}
-                    className="text-gray-400 hover:text-violet-600 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-violet-100"
+                    className="text-gray-400 hover:text-violet-600 w-10 h-10 rounded-full flex items-center justify-center transition-all hover:bg-violet-100"
                     title="Статистика"
                   >
-                    <BarChart3 className="w-4 h-4" />
+                    <BarChart3 className="w-5 h-5" />
                   </a>
                   <ProfileDropdown
                     avatarUrl={avatarUrl}

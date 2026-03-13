@@ -24,18 +24,18 @@ export default function ProfileDropdown({ avatarUrl, displayName, logout }) {
     <div className="relative" ref={ref}>
       <button
         onClick={() => setOpen(!open)}
-        className="w-8 h-8 rounded-full flex items-center justify-center transition-all hover:ring-2 hover:ring-violet-300"
+        className="w-10 h-10 rounded-full flex items-center justify-center transition-all hover:ring-2 hover:ring-violet-300"
       >
         {avatarUrl ? (
-          <img src={avatarUrl} className="w-8 h-8 rounded-full object-cover" alt="" />
+          <img src={avatarUrl} className="w-9 h-9 rounded-full object-cover" alt="" />
         ) : (
-          <div className="w-8 h-8 rounded-full bg-violet-200 flex items-center justify-center text-violet-700 text-sm font-bold">
+          <div className="w-9 h-9 rounded-full bg-violet-200 flex items-center justify-center text-violet-700 text-sm font-bold">
             {(displayName || "?")[0]?.toUpperCase()}
           </div>
         )}
       </button>
       {open && (
-        <div className="absolute right-0 top-10 bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-48 z-50">
+        <div className="absolute right-0 top-11 bg-white rounded-xl shadow-lg border border-gray-100 py-1 w-48 z-50">
           {!confirmLogout ? (
             <>
               <a

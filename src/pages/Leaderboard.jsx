@@ -55,9 +55,14 @@ export default function Leaderboard() {
     let byLevel = results.filter((r) => r.level === activeLevel);
 
     if (isDaily) {
-      byLevel = byLevel.filter((r) =>
-        r.created_at && r.created_at.slice(0, 10) === today
-      );
+      byLevel = byLevel.filter((r) => {
+        if (!r.created_at) return false;
+        const localDate = new Date(r.created_at);
+        const y = localDate.getFullYear();
+        const m = String(localDate.getMonth() + 1).padStart(2, '0');
+        const d = String(localDate.getDate()).padStart(2, '0');
+        return `${y}-${m}-${d}` === today;
+      });
     }
 
     const grouped = {};

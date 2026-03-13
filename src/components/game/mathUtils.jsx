@@ -204,8 +204,16 @@ export function generateQuestion(level) {
   return { display: q.display, answer: q.answer, options, explanation: q.explanation };
 }
 
+function getLocalDateString() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}-${m}-${day}`;
+}
+
 export function generateDailyQuestions() {
-  const today = new Date().toISOString().slice(0, 10);
+  const today = getLocalDateString();
   const rng = seededRandom('daily-' + today);
   const original = Math.random;
   Math.random = rng;
@@ -217,7 +225,7 @@ export function generateDailyQuestions() {
 }
 
 export function getTodayUTC() {
-  return new Date().toISOString().slice(0, 10);
+  return getLocalDateString();
 }
 
 export function getPointsPerQuestion(level) {
