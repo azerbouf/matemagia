@@ -112,12 +112,12 @@ export default function Leaderboard() {
         </div>
 
         {/* Level tabs */}
-        <div className="flex gap-1.5 mb-6 overflow-x-auto pb-1">
+        <div className="flex gap-1.5 mb-6">
           {levelTabs.map((lvl) => (
             <button
               key={lvl}
               onClick={() => setActiveLevel(lvl)}
-              className={`py-2 px-3 rounded-full text-xs font-bold transition-all whitespace-nowrap flex-shrink-0 ${
+              className={`flex-1 py-2 rounded-full text-xs font-bold transition-all whitespace-nowrap ${
                 activeLevel === lvl
                   ? `${levelColors[lvl]} text-white shadow-md`
                   : "bg-white text-gray-500 border border-gray-200"
