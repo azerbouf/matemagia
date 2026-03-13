@@ -111,22 +111,22 @@ function ActivityChart({ data, period, onPeriodChange }) {
           ))}
         </div>
       </div>
-      <div className="flex items-end gap-[3px] h-24">
+      <div className="flex items-end gap-1 h-28">
         {data.map((d, i) => (
-          <div key={i} className="flex-1 flex flex-col items-center gap-0.5">
+          <div key={i} className="flex-1 flex flex-col items-center gap-0.5 h-full justify-end">
             {d.count > 0 && period <= 14 && (
-              <span className="text-[8px] font-bold text-violet-500 leading-none">{d.count}</span>
+              <span className="text-[9px] font-bold text-violet-600 leading-none">{d.count}</span>
             )}
             <motion.div
               key={`${period}-${i}`}
               initial={{ height: 0 }}
-              animate={{ height: d.count > 0 ? `${Math.max((d.count / maxCount) * 100, 10)}%` : '0%' }}
+              animate={{ height: d.count > 0 ? `${Math.max((d.count / maxCount) * 100, 12)}%` : '0%' }}
               transition={{ duration: 0.4, delay: i * 0.02 }}
-              className="w-full rounded-t bg-gradient-to-t from-violet-500 to-violet-300"
-              style={{ minHeight: d.count > 0 ? 3 : 0 }}
+              className="rounded-md bg-gradient-to-t from-violet-500 to-violet-300"
+              style={{ width: '60%', minHeight: d.count > 0 ? 6 : 0 }}
             />
             {d.label && (
-              <span className={`text-[9px] leading-none ${i === data.length - 1 ? 'text-violet-600 font-bold' : 'text-gray-400'}`}>
+              <span className={`text-[9px] leading-none mt-1 ${i === data.length - 1 ? 'text-violet-600 font-bold' : 'text-gray-400'}`}>
                 {d.label}
               </span>
             )}

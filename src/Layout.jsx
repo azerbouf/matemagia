@@ -82,7 +82,7 @@ function ProfileDropdown({ avatarUrl, displayName, logout }) {
 export default function Layout({ children, currentPageName }) {
   const { user, profile, isAuthenticated, logout } = useAuth();
 
-  const showHeader = currentPageName !== "Game";
+  const showHeader = currentPageName !== "Game" && currentPageName !== "Home";
   const displayName = profile?.display_name || user?.user_metadata?.full_name || user?.email;
   const avatarUrl = profile?.avatar_url;
 

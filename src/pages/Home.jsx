@@ -5,7 +5,7 @@ import LevelSelect from "../components/game/LevelSelect";
 import { createPageUrl } from "@/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Trophy, Loader2, Sparkles, LogIn, User, Mail } from "lucide-react";
+import { Trophy, Loader2, Sparkles, LogIn, User, Mail, BarChart3, LogOut } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Home() {
@@ -20,7 +20,7 @@ export default function Home() {
 
   if (isLoading) {
     return (
-      <div className="flex-1 flex items-center justify-center bg-gradient-to-b from-violet-50 to-indigo-50">
+      <div className="h-[100dvh] flex items-center justify-center bg-gradient-to-b from-violet-50 to-indigo-50">
         <Loader2 className="w-8 h-8 text-violet-500 animate-spin" />
       </div>
     );
@@ -73,7 +73,7 @@ export default function Home() {
   // Landing screen
   if (mode === null) {
     return (
-      <div className="flex-1 bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
+      <div className="h-[100dvh] bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -118,7 +118,7 @@ export default function Home() {
   // Email login/signup
   if (mode === "email-login") {
     return (
-      <div className="flex-1 bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
+      <div className="h-[100dvh] bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -208,7 +208,7 @@ export default function Home() {
   // Guest name input
   if (mode === "guest") {
     return (
-      <div className="flex-1 bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
+      <div className="h-[100dvh] bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col items-center justify-center px-4 overflow-hidden">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -252,35 +252,57 @@ export default function Home() {
     );
   }
 
+  const headerDisplayName = isAuthenticated
+    ? (profile?.display_name || user?.user_metadata?.full_name || user?.email)
+    : guestName;
+  const headerAvatarUrl = profile?.avatar_url;
+
   // Level selection
   return (
-    <div className="flex-1 bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col overflow-hidden">
+    <div className="h-[100dvh] bg-gradient-to-b from-violet-50 via-white to-indigo-50 flex flex-col overflow-hidden">
+      {/* Inline header */}
+      <div className="bg-violet-50 flex-shrink-0">
+        <div className="px-4 pt-3 pb-2 max-w-md mx-auto flex items-center justify-between">
+          <span className="text-xl font-extrabold bg-gradient-to-r from-violet-600 to-indigo-600 bg-clip-text text-transparent">
+            🧮 МатеМагия
+          </span>
+          <div className="flex items-center gap-2">
+            <a
+              href={createPageUrl("Leaderboard")}
+              className="text-gray-400 hover:text-amber-600 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-amber-50"
+              title="Таблица лидеров"
+            >
+              <Trophy className="w-4 h-4" />
+            </a>
+            {isAuthenticated && (
+              <a
+                href={createPageUrl("Stats")}
+                className="text-gray-400 hover:text-violet-600 w-8 h-8 rounded-full flex items-center justify-center transition-all hover:bg-violet-100"
+                title="Статистика"
+              >
+                <BarChart3 className="w-4 h-4" />
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
       <div className="flex-1 min-h-0 overflow-y-auto">
         <LevelSelect
           playerName={isAuthenticated ? (profile?.display_name || user?.user_metadata?.full_name) : guestName}
           onSelect={handleLevelSelect}
         />
-        <div className="px-4 max-w-md mx-auto pt-6 pb-8 space-y-3">
-          <a href={createPageUrl("Leaderboard")}>
-            <Button
-              variant="outline"
-              className="w-full h-11 rounded-2xl border-2 border-amber-200 text-amber-700 hover:bg-amber-50"
-            >
-              <Trophy className="w-5 h-5 mr-2" />
-              Таблица лидеров
-            </Button>
-          </a>
-          {!isAuthenticated && (
+        {!isAuthenticated && (
+          <div className="px-4 max-w-md mx-auto pt-6 pb-8">
             <Button
               onClick={() => setMode("email-login")}
               variant="outline"
-              className="w-full h-11 rounded-2xl border-2 border-violet-200 text-violet-600 hover:bg-violet-50 mt-2"
+              className="w-full h-11 rounded-2xl border-2 border-violet-200 text-violet-600 hover:bg-violet-50"
             >
               <LogIn className="w-5 h-5 mr-2" />
               Войти в аккаунт
             </Button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
