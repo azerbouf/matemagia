@@ -326,10 +326,10 @@ export default function Stats() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-violet-50 via-white to-indigo-50">
       <div className="px-4 py-6 max-w-md mx-auto pb-12">
-        <a href={createPageUrl("Profile")}>
+        <a href={createPageUrl("Home")}>
           <Button variant="ghost" className="mb-4 text-gray-500 hover:text-gray-700 -ml-2">
             <ArrowLeft className="w-4 h-4 mr-1" />
-            Профиль
+            На главную
           </Button>
         </a>
 
