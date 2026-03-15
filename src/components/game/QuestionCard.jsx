@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Check, X, ArrowRight, Lightbulb, Clock } from "lucide-react";
-import { getPointsPerQuestion, getSpeedBonus, TIMER_SECONDS } from "./mathUtils";
+import { getPointsPerQuestion, getSpeedBonus, getQuestionTime } from "./mathUtils";
 import { playCorrectSound, playWrongSound } from "./sounds";
 import Confetti from "./Confetti";
 import Mascot from "./Mascot";
@@ -17,7 +17,8 @@ export default function QuestionCard({
 }) {
   const [selected, setSelected] = useState(null);
   const [showExplanation, setShowExplanation] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS[level] || 30);
+  const totalTime = getQuestionTime(level, question);
+  const [timeLeft, setTimeLeft] = useState(totalTime);
   const [timedOut, setTimedOut] = useState(false);
   const [shake, setShake] = useState(false);
   const timerRef = useRef(null);
@@ -25,8 +26,7 @@ export default function QuestionCard({
   const isAnswered = selected !== null || timedOut;
   const isCorrect = selected === question.answer;
   const points = getPointsPerQuestion(level);
-  const speedBonus = isAnswered && isCorrect ? getSpeedBonus(level, timeLeft) : 0;
-  const totalTime = TIMER_SECONDS[level] || 30;
+  const speedBonus = isAnswered && isCorrect ? getSpeedBonus(level, timeLeft, totalTime) : 0;
 
   // Reset and start timer on new question
   useEffect(() => {
@@ -76,7 +76,7 @@ export default function QuestionCard({
   };
 
   const handleNext = () => {
-    onAnswer(isCorrect && !timedOut, timeLeft);
+    onAnswer(isCorrect && !timedOut, timeLeft, totalTime);
   };
 
   const timerColor =
@@ -142,9 +142,11 @@ export default function QuestionCard({
 
       {/* Question */}
       <div className="bg-gradient-to-br from-violet-500 to-indigo-600 rounded-3xl p-6 sm:p-8 text-center mb-6 shadow-xl shadow-violet-200">
-        <p className="text-white/70 text-sm mb-2">Сколько будет?</p>
-        <h2 className="text-4xl sm:text-5xl font-extrabold text-white tracking-wide">
-          {question.display} = ?
+        <p className="text-white/70 text-sm mb-2">
+          {question.display.endsWith("?") ? "Выбери ответ" : "Сколько будет?"}
+        </p>
+        <h2 className={`font-extrabold text-white tracking-wide ${question.display.length > 30 ? "text-xl sm:text-2xl" : "text-4xl sm:text-5xl"}`}>
+          {question.display.endsWith("?") || question.display.includes("=") ? question.display : `${question.display} = ?`}
         </h2>
       </div>
 

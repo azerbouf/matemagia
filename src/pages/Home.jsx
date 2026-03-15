@@ -7,12 +7,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Trophy, Loader2, Sparkles, LogIn, User, Mail, BarChart3 } from "lucide-react";
 import ProfileDropdown from "@/components/ProfileDropdown";
+import ToolsDropdown from "@/components/ToolsDropdown";
 import { motion } from "framer-motion";
 
 export default function Home() {
   const { user, profile, isAuthenticated, isLoading } = useAuth();
-  const [mode, setMode] = useState(null); // null | "guest" | "play" | "email-login"
-  const [guestName, setGuestName] = useState("");
+  const [mode, setMode] = useState(() => {
+    const savedGuest = sessionStorage.getItem("guest_name");
+    return savedGuest ? "play" : null;
+  });
+  const [guestName, setGuestName] = useState(() => {
+    return sessionStorage.getItem("guest_name") || "";
+  });
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState("");
@@ -42,7 +48,10 @@ export default function Home() {
 
   const handleGuestSubmit = (e) => {
     e.preventDefault();
-    if (guestName.trim()) setMode("play");
+    if (guestName.trim()) {
+      sessionStorage.setItem("guest_name", guestName.trim());
+      setMode("play");
+    }
   };
 
   const handleEmailAuth = async (e) => {
@@ -275,6 +284,7 @@ export default function Home() {
             >
               <Trophy className="w-5 h-5" />
             </a>
+            <ToolsDropdown />
             {isAuthenticated ? (
               <>
                 <a

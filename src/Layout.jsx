@@ -3,6 +3,7 @@ import { useAuth } from "@/lib/AuthContext";
 import { createPageUrl } from "@/utils";
 import { BarChart3, Trophy } from "lucide-react";
 import ProfileDropdown from "@/components/ProfileDropdown";
+import ToolsDropdown from "@/components/ToolsDropdown";
 
 export default function Layout({ children, currentPageName }) {
   const { user, profile, isAuthenticated, logout } = useAuth();
@@ -30,6 +31,7 @@ export default function Layout({ children, currentPageName }) {
               >
                 <Trophy className="w-5 h-5" />
               </a>
+              <ToolsDropdown />
               {isAuthenticated && (
                 <>
                   <a

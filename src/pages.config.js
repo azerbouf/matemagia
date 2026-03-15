@@ -52,6 +52,8 @@ import Home from './pages/Home';
 import Leaderboard from './pages/Leaderboard';
 import Profile from './pages/Profile';
 import Stats from './pages/Stats';
+import Calculator from './pages/Calculator';
+import MultiplicationTable from './pages/MultiplicationTable';
 import __Layout from './Layout.jsx';
 
 
@@ -61,6 +63,8 @@ export const PAGES = {
     "Leaderboard": Leaderboard,
     "Profile": Profile,
     "Stats": Stats,
+    "Calculator": Calculator,
+    "MultiplicationTable": MultiplicationTable,
 }
 
 export const pagesConfig = {

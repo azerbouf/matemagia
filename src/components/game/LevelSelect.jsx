@@ -37,7 +37,7 @@ const levels = [
   },
   {
     id: "bonus",
-    label: "Бонусный",
+    label: "Сложный",
     description: "Всё вместе — для смелых!",
     icon: Crown,
     color: "from-violet-500 to-purple-600",

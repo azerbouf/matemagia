@@ -31,8 +31,8 @@ export const ACHIEVEMENTS = [
   },
   {
     id: "bonus_champ",
-    title: "Бонусный чемпион",
-    description: "Бонусный уровень с 8+ верными ответами",
+    title: "Сложный чемпион",
+    description: "Сложный уровень с 8+ верными ответами",
     emoji: "🏆",
   },
 ];
